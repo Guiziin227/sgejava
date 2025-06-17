@@ -1,5 +1,6 @@
 package com.github.guiziin227.sgejava.service;
 
+import com.github.guiziin227.sgejava.exceptions.DbIntegrityVioletionException;
 import com.github.guiziin227.sgejava.model.User;
 import com.github.guiziin227.sgejava.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,12 @@ public class UserService {
     @Transactional
     public User createUser(User user) {
         logger.info("Creating user");
-        return userRepository.save(user);
+        try{
+            return userRepository.save(user);
+        } catch (Exception e) {
+            logger.error("Error creating user: {}", e.getMessage());
+            throw new DbIntegrityVioletionException(e.getMessage());
+        }
     }
 
     @Transactional(readOnly = true)
